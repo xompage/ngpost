@@ -3,4 +3,12 @@ if [ ! -f  "/config/.ngPost" ]; then
     cp /opt/ngPost.sample.conf /config/.ngPost
 fi
 
+if [ ! -d  "/config/nzbs" ]; then
+    mkdir /config/nzbs
+fi
+
+if [ ! -d  "/config/.logs" ]; then
+    mkdir /config/.logs
+fi
+
 dbus-launch /usr/local/bin/ngPost --appimage-extract-and-run
