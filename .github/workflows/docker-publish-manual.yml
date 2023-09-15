@@ -24,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Short GitHub SHA and Save in Environment Variable
+      - name: Get Short GitHub short SHA
         run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           
       # Set up BuildKit Docker container builder to be able to build
