@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Get Short GitHub SHA and Save in Environment Variable
+        run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
@@ -59,7 +62,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}-$(git rev-parse --short ${{ github.sha }})
+          tags: ${{ steps.meta.outputs.tags }}-${{ SHORT_GITHUB_SHA }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
