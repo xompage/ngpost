@@ -11,7 +11,8 @@ RUN \
   apt-get install --no-install-recommends -y \
     rar \
     ca-certificates \
-    tmux \
+    xz-utils \
+    tmux && \
   apt-get clean all && \
   rm -rf /var/lib/apt/lists/* && \
   echo "**** download ngpost ****" && \
@@ -23,10 +24,10 @@ RUN \
   curl -o \
   /tmp/parpar.xz -L \
   "https://github.com/animetosho/ParPar/releases/download/v0.4.2/parpar-v0.4.2-linux-static-amd64.xz" && \
-  tar xf \
-    /tmp/parpar.xz -C \
-    /usr/bin/ngPost --strip-components=1 && \
-  rm /tmp/parpar.xz && \
+  xz -d \
+    /tmp/parpar.xz && \
+  mv /tmp/parpar /usr/bin/parpar && \
+  chmod +x /usr/bin/parpar && \
   echo "**** container tweaks ****" && \
   sed -i 's|</applications>|  <application title="ngPost*" type="regex">\n    <maximized>yes</maximized>\n  </application>\n</applications>|' /etc/xdg/openbox/rc.xml
 
