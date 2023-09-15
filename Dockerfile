@@ -1,25 +1,58 @@
-FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
+# Builder
+FROM ghcr.io/linuxserver/baseimage-debian:bullseye as builder
 
-ENV \
-  CUSTOM_PORT="7070" \
-  TITLE="ngPost"
+RUN \
+  echo "**** download ngpost source ****" && \
+  mkdir /usr/src/ngPost && \
+  curl -o \
+    /tmp/ngpost.tar.gz -L \
+    "https://github.com/mbruel/ngPost/archive/refs/tags/v4.16.tar.gz" && \
+  tar xf \
+    /tmp/ngpost.tar.gz -C \
+    /usr/src/ngPost --strip-components=1 && \
+  rm /tmp/ngpost.tar.gz
+WORKDIR /usr/src/ngPost/src
+
+ENV QT_SELECT=qt5-x86_64-linux-gnu
 
 RUN \
   echo "**** install packages ****" && \
   sed -i 's/main$/main non-free/' /etc/apt/sources.list && \
   apt-get update && \
   apt-get install --no-install-recommends -y \
+    git \
+    build-essential \
+    qt5-qmake \
+    qtbase5-dev \
+    par2 \
+    rar \
+    ca-certificates && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "**** build ngpost ****" && \
+  qmake -o Makefile ngPost.pro && \
+  make -j$(nproc)
+  
+FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
+
+ENV \
+  CUSTOM_PORT="7070" \
+  TITLE="ngPost"
+
+COPY --from=builder /usr/src/ngPost /usr/src/ngPost
+
+RUN \
+  ln -s /usr/src/ngPost/src/ngPost /usr/local/bin/ngPost && \
+  echo "**** install packages ****" && \
+  sed -i 's/main$/main non-free/' /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get install --no-install-recommends -y \
     rar \
     ca-certificates \
+    qtbase5-dev \
     xz-utils \
     tmux && \
   apt-get clean all && \
   rm -rf /var/lib/apt/lists/* && \
-  echo "**** download ngpost ****" && \
-  curl -o \
-  /usr/local/bin/ngPost -L \
-  "https://github.com/mbruel/ngPost/releases/download/v4.16/ngPost_v4.16-x86_64.AppImage" && \
-  chmod +x /usr/local/bin/ngPost && \
   echo "**** download parpar ****" && \
   curl -o \
   /tmp/parpar.xz -L \
