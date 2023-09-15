@@ -1,0 +1,6 @@
+# Check config file
+if [ ! -f  "/config/.ngPost" ]; then
+    cp /opt/ngPost.sample.conf /config/.ngPost
+fi
+
+dbus-launch /usr/local/bin/ngPost --appimage-extract-and-run
