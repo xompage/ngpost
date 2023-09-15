@@ -2,10 +2,7 @@ name: docker-release
 
 on:
   workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Enter tag name for test/dev image'
-        default: 'test'
+
   #push:
   #  # Publish semver tags as releases.
   #  tags: [ 'v*.*' ]
