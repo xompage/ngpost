@@ -15,4 +15,4 @@ if [ ! -d  "/output/.tmp" ]; then
     mkdir /output/.tmp
 fi
 
-dbus-launch /usr/local/bin/ngPost --appimage-extract-and-run
+dbus-launch /usr/local/bin/ngPost
