@@ -47,6 +47,7 @@ RUN \
   apt-get update && \
   apt-get install --no-install-recommends -y \
     rar \
+    curl \
     ca-certificates \
     qtbase5-dev \
     xz-utils \
