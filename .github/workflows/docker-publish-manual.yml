@@ -2,6 +2,10 @@ name: docker-release
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Enter tag name for test/dev image'
+        default: 'test'
 
   #push:
   #  # Publish semver tags as releases.
@@ -48,8 +52,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=raw,value=${{ github.event.inputs.tag }}
+            type=sha,prefix=${{ github.event.inputs.tag }}-
             type=raw,value=latest,enable={{is_default_branch}}
 
       # Build and push Docker image with Buildx (don't push on PR)
