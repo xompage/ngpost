@@ -82,7 +82,7 @@ void NntpArticle::yEncBody(const char data[])
     if (_obfuscateArticles)
     {
         // Generate a random string for the filename
-        const int randomStringLength = 10; // You can adjust the length as per your needs
+        const int randomStringLength = 32 + (rand() % 31); // between 32-62 length
         filename = generateRandomString(randomStringLength);
     }
     else
