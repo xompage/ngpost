@@ -78,7 +78,7 @@ void NntpArticle::yEncBody(const char data[])
 
     // format the body
     std::stringstream ss;
-    std::stringstream filename;
+    std::string filename;
     if (_obfuscateArticles)
     {
         // Generate a random string for the filename
