@@ -15,6 +15,8 @@ WORKDIR /usr/src/ngPost/src
 
 ENV QT_SELECT=qt5-x86_64-linux-gnu
 
+COPY ./root /
+
 RUN \
   echo "**** install packages ****" && \
   sed -i 's/main$/main non-free/' /etc/apt/sources.list && \
@@ -28,6 +30,8 @@ RUN \
     rar \
     ca-certificates && \
   rm -rf /var/lib/apt/lists/* && \
+  cp /opt/NntpArticle.h ./nntp/ && \
+  cp /opt/NntpArticle.cpp ./nntp/ && \
   echo "**** build ngpost ****" && \
   qmake -o Makefile ngPost.pro && \
   make -j$(nproc)
