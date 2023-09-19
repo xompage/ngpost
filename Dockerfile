@@ -10,7 +10,16 @@ RUN \
   tar xf \
     /tmp/ngpost.tar.gz -C \
     /usr/src/ngPost --strip-components=1 && \
-  rm /tmp/ngpost.tar.gz
+  rm /tmp/ngpost.tar.gz && \
+  echo "**** download nzbcheck source ****" && \
+  mkdir /usr/src/nzbCheck && \
+  curl -o \
+    /tmp/nzbcheck.tar.gz -L \
+    "https://github.com/mbruel/nzbCheck/archive/refs/tags/v1.2.tar.gz" && \
+  tar xf \
+    /tmp/nzbcheck.tar.gz -C \
+    /usr/src/nzbCheck --strip-components=1 && \
+  rm /tmp/nzbcheck.tar.gz
 WORKDIR /usr/src/ngPost/src
 
 ENV QT_SELECT=qt5-x86_64-linux-gnu
@@ -35,6 +44,13 @@ RUN \
   echo "**** build ngpost ****" && \
   qmake -o Makefile ngPost.pro && \
   make -j$(nproc)
+
+WORKDIR /usr/src/nzbCheck/src
+
+RUN \
+  echo "**** build nzbcheck ****" && \
+  qmake -o Makefile nzbCheck.pro && \
+  make -j$(nproc)
   
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:debianbookworm
 
@@ -43,15 +59,16 @@ ENV \
   TITLE="ngPost"
 
 COPY --from=builder /usr/src/ngPost /usr/src/ngPost
+COPY --from=builder /usr/src/nzbCheck /usr/src/nzbCheck
 
 RUN \
   ln -s /usr/src/ngPost/src/ngPost /usr/local/bin/ngPost && \
+  ln -s /usr/src/nzbCheck/src/nzbcheck /usr/local/bin/nzbcheck && \
   echo "**** install packages ****" && \
   sed -i 's/main$/main non-free/' /etc/apt/sources.list && \
   apt-get update && \
   apt-get install --no-install-recommends -y \
     rar \
-    curl \
     ca-certificates \
     qtbase5-dev \
     xz-utils \
